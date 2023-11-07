@@ -5,7 +5,7 @@ import tkinter as tk
 import threading
 
 from notif import send_notification
-from config import WARNING_IMAGE_PATH, KEY_COMBO, MESSAGE_BODY, MESSAGE_TITLE
+from config import WARNING_IMAGE_PATH, KEY_COMBO, MESSAGE_BODY, MESSAGE_TITLE, WARNING_COUNT
 
 xtrlock_process = None
 lock_active = False
@@ -46,11 +46,14 @@ def display_message():
     display_image_with_tkinter()
         
     message_displaying = False
-    if warning_count >= 5:
-        send_notification(
-            MESSAGE_TITLE,
-            MESSAGE_BODY
-        )
+    if warning_count >= WARNING_COUNT:
+        try:
+            send_notification(
+                MESSAGE_TITLE,
+                MESSAGE_BODY
+            )
+        except:
+            print("Error sending notification.")
         warning_count = 0
     else:
         warning_count += 1
@@ -62,6 +65,8 @@ def display_image_with_tkinter():
     img = Image.open(WARNING_IMAGE_PATH)
     root = tk.Tk()
     root.title("WARNING!")
+
+    root.overrideredirect(True)
     
     # Get screen width and height
     screen_width = root.winfo_screenwidth()
